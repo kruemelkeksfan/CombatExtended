@@ -6,6 +6,7 @@ using RimWorld;
 using Verse;
 using UnityEngine;
 using Verse.AI;
+using Multiplayer.API;
 
 namespace CombatExtended
 {
@@ -33,6 +34,7 @@ namespace CombatExtended
             others.Add(order);
         }
 
+        [SyncMethod]
         public override void ProcessInput(Event ev)
         {
             if (compAmmo == null)

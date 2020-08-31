@@ -396,7 +396,7 @@ namespace CombatExtended
                 
                 case SourceSelection.Generic:
                     _sourceType = SourceSelection.Generic;
-                    initGenericVisibilityDictionary();
+                    InitGenericVisibilityDictionary();
                     break;
 
                 case SourceSelection.All:
@@ -735,7 +735,7 @@ namespace CombatExtended
         	return genericVisibility[def].check;
         }
         
-        private void initGenericVisibilityDictionary()
+        private void InitGenericVisibilityDictionary()
         {
         	int tick = GenTicks.TicksAbs;
         	int position = 1;
