@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Verse;
+using Multiplayer.API;
 
 namespace CombatExtended
 {
@@ -138,6 +139,7 @@ namespace CombatExtended
         /// <summary>
         /// Cycles through all available fire modes in order
         /// </summary>
+        [SyncMethod]
         public void ToggleFireMode()
         {
             int currentFireModeNum = availableFireModes.IndexOf(currentFireModeInt);
@@ -146,6 +148,7 @@ namespace CombatExtended
             if (availableFireModes.Count > 1) PlayerKnowledgeDatabase.KnowledgeDemonstrated(CE_ConceptDefOf.CE_FireModes, KnowledgeAmount.Total);
         }
 
+        [SyncMethod]
         public void ToggleAimMode()
         {
             int currentAimModeNum = availableAimModes.IndexOf(currentAimModeInt);
