@@ -8,12 +8,21 @@ using Verse;
 using Verse.AI;
 using Verse.Sound;
 using UnityEngine;
+using Multiplayer.API;
 
 namespace CombatExtended
 {
     static class CE_Utility
     {
-    	
+        class RandomData
+		{
+            [SyncField]
+            public double angle;
+            [SyncField]
+            public double range;
+		}
+
+    	static RandomData data = new RandomData();
     	#region Blitting
     	private const int blitMaxDimensions = 64;
     	
@@ -126,12 +135,45 @@ namespace CombatExtended
         /// </summary>
         public static Vector2 GenRandInCircle(float radius)
         {
-            //Fancy math to get random point in circle
-            System.Random rand = new System.Random();
-            double angle = rand.NextDouble() * Math.PI * 2;
-            double range = Math.Sqrt(rand.NextDouble()) * radius;
-            return new Vector2((float)(range * Math.Cos(angle)), (float)(range * Math.Sin(angle)));
-        }
+			//Fancy math to get random point in circle
+			System.Random rand = new System.Random();
+
+			if(MP.IsInMultiplayer)
+			{
+
+				MP.WatchBegin(); // Let's being watching
+
+				// This is here to set the variable if it changed on other clients
+				// It will update the variable and the logic will stay the same.
+				MP.Watch(data, nameof(data.angle));
+			}
+			data.angle = rand.NextDouble() * Math.PI * 2;
+			if(MP.IsInMultiplayer)
+			{
+
+				MP.WatchEnd(); // We are done watching!
+
+			}
+
+			if(MP.IsInMultiplayer)
+			{
+
+				MP.WatchBegin(); // Let's being watching
+
+				// This is here to set the variable if it changed on other clients
+				// It will update the variable and the logic will stay the same.
+				MP.Watch(data, nameof(data.range));
+			}
+			data.range = Math.Sqrt(rand.NextDouble()) * radius;
+			if(MP.IsInMultiplayer)
+			{
+
+				MP.WatchEnd(); // We are done watching!
+
+			}
+
+			return new Vector2((float)(data.range * Math.Cos(data.angle)), (float)(data.range * Math.Sin(data.angle)));
+		}
 
         /// <summary>
         /// Calculates the actual current movement speed of a pawn
