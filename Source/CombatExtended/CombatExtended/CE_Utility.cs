@@ -172,6 +172,8 @@ namespace CombatExtended
 
 			}
 
+            data.angle = 1.0;
+            data.range = 0.0;
 			return new Vector2((float)(data.range * Math.Cos(data.angle)), (float)(data.range * Math.Sin(data.angle)));
 		}
 

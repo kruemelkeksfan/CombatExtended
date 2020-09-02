@@ -10,208 +10,235 @@ using Multiplayer.API;
 
 namespace CombatExtended
 {
-    public class Command_Reload : Command_Action
-    {
-        List<Command_Reload> others;
-        public CompAmmoUser compAmmo;
+	public class Command_Reload : Command_Action
+	{
+		List<Command_Reload> others;
+		public CompAmmoUser compAmmo;
 
-        public override bool GroupsWith(Gizmo other)
-        {
-            var order = other as Command_Reload;
-            return order != null;
-        }
+		[SyncWorker(shouldConstruct = true)]
+		static void SyncCommand_Reload(SyncWorker sync, ref Command_Reload type)
+		{
+			if(sync.isWriting)
+			{
+				if(type.compAmmo != null)
+				{
+					sync.Write(type.compAmmo);
+				}
+			}
+			else
+			{
+				CompAmmoUser compAmmo = sync.Read<CompAmmoUser>();
 
-        public override void MergeWith(Gizmo other)
-        {
-            var order = other as Command_Reload;
+				Command_Reload reloadCommandGizmo = new Command_Reload
+				{
+					compAmmo = compAmmo,
+				};
+			}
+		}
 
-            if (others == null)
-            {
-                others = new List<Command_Reload>();
-                others.Add(this);
-            }
+		public override bool GroupsWith(Gizmo other)
+		{
+			var order = other as Command_Reload;
+			return order != null;
+		}
 
-            others.Add(order);
-        }
+		public override void MergeWith(Gizmo other)
+		{
+			var order = other as Command_Reload;
 
-        [SyncMethod]
-        public override void ProcessInput(Event ev)
-        {
-            if (compAmmo == null)
-            {
-                Log.Error("Command_Reload without ammo comp");
-                return;
-            }
+			if(others == null)
+			{
+				others = new List<Command_Reload>();
+				others.Add(this);
+			}
 
-            if (compAmmo.UseAmmo && (compAmmo.CompInventory != null || compAmmo.turret != null) || action == null)
-            {
-                bool currentlyMannedTurret = compAmmo.turret?.MannableComp?.MannedNow ?? false;
-                if (Controller.settings.RightClickAmmoSelect && action != null && (compAmmo.turret == null || currentlyMannedTurret))
-                {
-                    base.ProcessInput(ev);
-                }
-                else
-                {
-                    Find.WindowStack.Add(MakeAmmoMenu());
-                }
-            }
-            else if (compAmmo.SelectedAmmo != compAmmo.CurrentAmmo || compAmmo.CurMagCount < compAmmo.Props.magazineSize)
-            {
-                base.ProcessInput(ev);
-            }
+			others.Add(order);
+		}
 
-            // Show we learned something by clicking this
-            if (!tutorTag.NullOrEmpty())
-            {
-                PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDef.Named(tutorTag), KnowledgeAmount.Total);
-            }
-        }
+		[SyncMethod]
+		public override void ProcessInput(Event ev)
+		{
+			if(compAmmo == null)
+			{
+				Log.Error("Command_Reload without ammo comp");
+				return;
+			}
 
-        public override IEnumerable<FloatMenuOption> RightClickFloatMenuOptions
-        {
-            get
-            {
-                if (Controller.settings.RightClickAmmoSelect)
-                {
-                    foreach (var option in BuildAmmoOptions())
-                    {
-                        yield return option;
-                    }
-                }
-            }
-        }
+			if(compAmmo.UseAmmo && (compAmmo.CompInventory != null || compAmmo.turret != null) || action == null)
+			{
+				bool currentlyMannedTurret = compAmmo.turret?.MannableComp?.MannedNow ?? false;
+				if(Controller.settings.RightClickAmmoSelect && action != null && (compAmmo.turret == null || currentlyMannedTurret))
+				{
+					base.ProcessInput(ev);
+				}
+				else
+				{
+					Find.WindowStack.Add(MakeAmmoMenu());
+				}
+			}
+			else if(compAmmo.SelectedAmmo != compAmmo.CurrentAmmo || compAmmo.CurMagCount < compAmmo.Props.magazineSize)
+			{
+				base.ProcessInput(ev);
+			}
 
-        private FloatMenu MakeAmmoMenu()
-        {
-            return new FloatMenu(BuildAmmoOptions());
-        }
+			// Show we learned something by clicking this
+			if(!tutorTag.NullOrEmpty())
+			{
+				PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDef.Named(tutorTag), KnowledgeAmount.Total);
+			}
+		}
 
-        private List<FloatMenuOption> BuildAmmoOptions()
-        {
-            //Prepare list of others in case only a single gizmo is selected
-            if (others == null)
-                others = new List<Command_Reload>();
-            if (!others.Contains(this))
-                others.Add(this);
+		public override IEnumerable<FloatMenuOption> RightClickFloatMenuOptions
+		{
+			get
+			{
+				if(Controller.settings.RightClickAmmoSelect)
+				{
+					foreach(var option in BuildAmmoOptions())
+					{
+						yield return option;
+					}
+				}
+			}
+		}
 
-            // Append float menu options for every available ammo type
-            List<FloatMenuOption> floatOptionList = new List<FloatMenuOption>();
+		private FloatMenu MakeAmmoMenu()
+		{
+			return new FloatMenu(BuildAmmoOptions());
+		}
 
-            #region Ammo type switching
-            if (compAmmo.UseAmmo)
-            {
-                //List of actions to be taken on choosing a new ammo type, listed by ammoCategoryDef (FMJ/AP/HP)
-                Dictionary<AmmoCategoryDef, Action> ammoClassActions = new Dictionary<AmmoCategoryDef, Action>();
+		private List<FloatMenuOption> BuildAmmoOptions()
+		{
+			//Prepare list of others in case only a single gizmo is selected
+			if(others == null)
+				others = new List<Command_Reload>();
+			if(!others.Contains(this))
+				others.Add(this);
 
-                //Index 0: amount which COULD have this ammoClass; Index 1: amount which CURRENTLY has this ammoClass
-                Dictionary<AmmoCategoryDef, int[]> ammoClassAmounts = new Dictionary<AmmoCategoryDef, int[]>();
+			// Append float menu options for every available ammo type
+			List<FloatMenuOption> floatOptionList = new List<FloatMenuOption>();
 
-                //Whether ALL in OTHERS lack reloadable weapons
-                var flag = false;
+			#region Ammo type switching
+			if(compAmmo.UseAmmo)
+			{
+				//List of actions to be taken on choosing a new ammo type, listed by ammoCategoryDef (FMJ/AP/HP)
+				Dictionary<AmmoCategoryDef, Action> ammoClassActions = new Dictionary<AmmoCategoryDef, Action>();
 
-                foreach (var other in others)
-                {
-                    var user = other.compAmmo;
+				//Index 0: amount which COULD have this ammoClass; Index 1: amount which CURRENTLY has this ammoClass
+				Dictionary<AmmoCategoryDef, int[]> ammoClassAmounts = new Dictionary<AmmoCategoryDef, int[]>();
 
-                    foreach (AmmoLink link in user.Props.ammoSet.ammoTypes)
-                    {
-                        var ammoDef = link.ammo;
-                        var ammoClass = ammoDef.ammoClass;
+				//Whether ALL in OTHERS lack reloadable weapons
+				var flag = false;
 
-                        // If we have no inventory available (e.g. manned turret), add all possible ammo types to the selection
-                        // Otherwise, iterate through all suitable ammo types and check if they're in our inventory
-                        if (user.CompInventory?.ammoList?.Any(x => x.def == ammoDef) ?? true)
-                        {
-                            if (!ammoClassAmounts.ContainsKey(ammoClass))
-                                ammoClassAmounts.Add(ammoClass, new int[2]);
+				foreach(var other in others)
+				{
+					var user = other.compAmmo;
 
-                            ammoClassAmounts[ammoClass][0]++;
+					foreach(AmmoLink link in user.Props.ammoSet.ammoTypes)
+					{
+						var ammoDef = link.ammo;
+						var ammoClass = ammoDef.ammoClass;
 
-                            Action del = null;
+						// If we have no inventory available (e.g. manned turret), add all possible ammo types to the selection
+						// Otherwise, iterate through all suitable ammo types and check if they're in our inventory
+						if(user.CompInventory?.ammoList?.Any(x => x.def == ammoDef) ?? true)
+						{
+							if(!ammoClassAmounts.ContainsKey(ammoClass))
+								ammoClassAmounts.Add(ammoClass, new int[2]);
 
-                            //Increase amount of current ammo of this type by 1
-                            if (user.CurrentAmmo == ammoDef)
-                                ammoClassAmounts[ammoClass][1]++;
+							ammoClassAmounts[ammoClass][0]++;
 
-                            if (user.SelectedAmmo == ammoDef)
-                            {
-                                if (Controller.settings.AutoReloadOnChangeAmmo && user.turret?.MannableComp == null && user.CurMagCount < user.Props.magazineSize)
-                                    del += other.action;
-                            }
-                            else
-                            {
-                                del += delegate { user.SelectedAmmo = ammoDef; };
+							Action del = null;
 
-                                if (Controller.settings.AutoReloadOnChangeAmmo && user.turret?.MannableComp == null)
-                                    del += other.action;
-                            }
+							//Increase amount of current ammo of this type by 1
+							if(user.CurrentAmmo == ammoDef)
+								ammoClassAmounts[ammoClass][1]++;
 
-                            //Add to delegate or create delegate at ammoClass key
-                            if (ammoClassActions.ContainsKey(ammoClass))
-                                ammoClassActions[ammoClass] += del;
-                            else
-                                ammoClassActions.Add(ammoClass, del);
+							if(user.SelectedAmmo == ammoDef)
+							{
+								if(Controller.settings.AutoReloadOnChangeAmmo && user.turret?.MannableComp == null && user.CurMagCount < user.Props.magazineSize)
+									del += other.action;
+							}
+							else
+							{
+								del += delegate
+								{
+									user.SelectedAmmo = ammoDef;
+								};
 
-                            flag = true;
-                        }
-                    }
-                }
-                
-                //At least one ammo type is available
-                if (flag)
-                {
-                    foreach (var pair in ammoClassActions)
-                    {
-                        //Create entries of form "(a/b) c"
-                        //a = number of guns currently using this ammo category
-                        //b = number of guns that could use this ammo category
-                        //c = name of category (FMJ/AP/HP/..)
-                        floatOptionList.Add(new FloatMenuOption(
-                                others.Except(this).Any() ?
-                                "(" + ammoClassAmounts[pair.Key][1] + "/" + ammoClassAmounts[pair.Key][0] + ") " + pair.Key.LabelCap
-                                : pair.Key.LabelCap
-                            , pair.Value));
-                    }
-                }
-                else    //Display when ALL OTHERS have no ammo
-                    floatOptionList.Add(new FloatMenuOption("CE_OutOfAmmo".Translate(), null));
-            }
-            #endregion
+								if(Controller.settings.AutoReloadOnChangeAmmo && user.turret?.MannableComp == null)
+									del += other.action;
+							}
 
-            #region Unloading and reloading
-            var unload = false;
-            Action unloadDel = null;
+							//Add to delegate or create delegate at ammoClass key
+							if(ammoClassActions.ContainsKey(ammoClass))
+								ammoClassActions[ammoClass] += del;
+							else
+								ammoClassActions.Add(ammoClass, del);
 
-            var reload = false;
-            Action reloadDel = null;
+							flag = true;
+						}
+					}
+				}
 
-            foreach (var other in others)
-            {
-                var user = other.compAmmo;
-                if (user.HasMagazine && user.Wielder != null || (user.turret?.MannableComp?.MannedNow ?? false))
-                {
-                    reload = true;
-                    reloadDel += other.action;
+				//At least one ammo type is available
+				if(flag)
+				{
+					foreach(var pair in ammoClassActions)
+					{
+						//Create entries of form "(a/b) c"
+						//a = number of guns currently using this ammo category
+						//b = number of guns that could use this ammo category
+						//c = name of category (FMJ/AP/HP/..)
+						floatOptionList.Add(new FloatMenuOption(
+								others.Except(this).Any() ?
+								"(" + ammoClassAmounts[pair.Key][1] + "/" + ammoClassAmounts[pair.Key][0] + ") " + pair.Key.LabelCap
+								: pair.Key.LabelCap
+							, pair.Value));
+					}
+				}
+				else    //Display when ALL OTHERS have no ammo
+					floatOptionList.Add(new FloatMenuOption("CE_OutOfAmmo".Translate(), null));
+			}
+			#endregion
 
-                    if (user.UseAmmo && user.CurMagCount > 0)
-                    {
-                        unload = true;
-                        unloadDel += delegate { user.TryUnload(true); };
-                    }
-                }
-            }
+			#region Unloading and reloading
+			var unload = false;
+			Action unloadDel = null;
 
-            // Append unload delegates
-            if (unload)
-                floatOptionList.Add(new FloatMenuOption("CE_UnloadLabel".Translate(), unloadDel));
+			var reload = false;
+			Action reloadDel = null;
 
-            // Append reload delegates
-            if (reload)
-                floatOptionList.Add(new FloatMenuOption("CE_ReloadLabel".Translate(), reloadDel));
-            #endregion
+			foreach(var other in others)
+			{
+				var user = other.compAmmo;
+				if(user.HasMagazine && user.Wielder != null || (user.turret?.MannableComp?.MannedNow ?? false))
+				{
+					reload = true;
+					reloadDel += other.action;
 
-            return floatOptionList;
-        }
+					if(user.UseAmmo && user.CurMagCount > 0)
+					{
+						unload = true;
+						unloadDel += delegate
+						{
+							user.TryUnload(true);
+						};
+					}
+				}
+			}
 
-    }
+			// Append unload delegates
+			if(unload)
+				floatOptionList.Add(new FloatMenuOption("CE_UnloadLabel".Translate(), unloadDel));
+
+			// Append reload delegates
+			if(reload)
+				floatOptionList.Add(new FloatMenuOption("CE_ReloadLabel".Translate(), reloadDel));
+			#endregion
+
+			return floatOptionList;
+		}
+
+	}
 }

@@ -49,8 +49,9 @@ namespace CombatExtended.Compatibility
 
 			}
 
-			Verse.Rand.Seed = seed.seed;
-			UnityEngine.Random.InitState(seed.seed);
+			Verse.Rand.PushState();
+			Verse.Rand.Seed = 0;//seed.seed;
+			UnityEngine.Random.InitState(0);//seed.seed);
 		}
 
 		public static void Init()
