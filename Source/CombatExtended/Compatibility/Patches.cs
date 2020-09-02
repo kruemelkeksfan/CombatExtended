@@ -30,28 +30,6 @@ namespace CombatExtended.Compatibility
 
 			// Use MP.IsInMultiplayer to act upon it in other places
 			// user can have it enabled and not be in session
-
-			// Initialize RNGs with same Seeds on every Client
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchBegin(); // Let's being watching
-
-				// This is here to set the variable if it changed on other clients
-				// It will update the variable and the logic will stay the same.
-				MP.Watch(seed, nameof(seed.seed));
-			}
-			seed.seed = (int) DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchEnd(); // We are done watching!
-
-			}
-
-			Verse.Rand.PushState();
-			Verse.Rand.Seed = 0;//seed.seed;
-			UnityEngine.Random.InitState(0);//seed.seed);
 		}
 
 		public static void Init()

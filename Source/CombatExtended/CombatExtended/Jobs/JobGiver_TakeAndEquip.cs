@@ -171,10 +171,11 @@ namespace CombatExtended
                 return null;
             }
 
-            if (!Rand.MTBEventOccurs(60, 5, 30))
+            // TODO: Comment in if somebody knows, how to synchronize this Method for Multiplayer
+            /*if (!Rand.MTBEventOccurs(60, 5, 30))
             {
                 return null;
-            }
+            }*/
 
             if (!pawn.Faction.IsPlayer && FindBattleWorthyEnemyPawnsCount(Find.CurrentMap, pawn) > 25)
             {

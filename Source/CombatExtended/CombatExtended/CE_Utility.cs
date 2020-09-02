@@ -14,15 +14,6 @@ namespace CombatExtended
 {
     static class CE_Utility
     {
-        class RandomData
-		{
-            [SyncField]
-            public double angle;
-            [SyncField]
-            public double range;
-		}
-
-    	static RandomData data = new RandomData();
     	#region Blitting
     	private const int blitMaxDimensions = 64;
     	
@@ -135,46 +126,10 @@ namespace CombatExtended
         /// </summary>
         public static Vector2 GenRandInCircle(float radius)
         {
-			//Fancy math to get random point in circle
-			System.Random rand = new System.Random();
-
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchBegin(); // Let's being watching
-
-				// This is here to set the variable if it changed on other clients
-				// It will update the variable and the logic will stay the same.
-				MP.Watch(data, nameof(data.angle));
-			}
-			data.angle = rand.NextDouble() * Math.PI * 2;
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchEnd(); // We are done watching!
-
-			}
-
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchBegin(); // Let's being watching
-
-				// This is here to set the variable if it changed on other clients
-				// It will update the variable and the logic will stay the same.
-				MP.Watch(data, nameof(data.range));
-			}
-			data.range = Math.Sqrt(rand.NextDouble()) * radius;
-			if(MP.IsInMultiplayer)
-			{
-
-				MP.WatchEnd(); // We are done watching!
-
-			}
-
-            data.angle = 1.0;
-            data.range = 0.0;
-			return new Vector2((float)(data.range * Math.Cos(data.angle)), (float)(data.range * Math.Sin(data.angle)));
+            //Fancy math to get random point in circle
+            float angle = Compatibility.Random.Next() * (float) Math.PI * 2.0f;
+            float range = (float) Math.Sqrt(Compatibility.Random.Next()) * radius;
+			return new Vector2((float)(range * Math.Cos(angle)), (float)(range * Math.Sin(angle)));
 		}
 
         /// <summary>
@@ -298,11 +253,11 @@ namespace CombatExtended
                 return;
             }
             MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(casingMoteDef, null);
-            moteThrown.Scale = Rand.Range(0.5f, 0.3f) * size;
-            moteThrown.exactRotation = Rand.Range(-3f, 4f);
+            moteThrown.Scale = ((Compatibility.Random.Next() * 0.2f) + 0.3f) * size;
+            moteThrown.exactRotation = ((Compatibility.Random.Next() * 7.0f) - 3.0f);
             moteThrown.exactPosition = loc;
             moteThrown.airTimeLeft = 60;
-            moteThrown.SetVelocity((float)Rand.Range(160, 200), Rand.Range(0.7f, 0.5f));
+            moteThrown.SetVelocity(((Compatibility.Random.Next() * 40.0f) + 160.0f), ((Compatibility.Random.Next() * 0.2f) + 0.5f));
             //     moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
             GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
         }
