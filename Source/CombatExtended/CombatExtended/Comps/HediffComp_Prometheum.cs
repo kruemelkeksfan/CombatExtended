@@ -31,7 +31,8 @@ namespace CombatExtended
                 // Apply to internal parts
                 if (Pawn.def.race.IsMechanoid)
                 {
-                    var internalPart = Pawn.health.hediffSet.GetNotMissingParts(BodyPartHeight.Undefined, BodyPartDepth.Inside).RandomElement();
+                    List<BodyPartRecord> availableParts = Pawn.health.hediffSet.GetNotMissingParts(BodyPartHeight.Undefined, BodyPartDepth.Inside).ToList(); 
+                    var internalPart = availableParts[(int) (Compatibility.Random.Value() * availableParts.Count)];
                     if (internalPart == null)
                         return;
                     Pawn.TakeDamage(new DamageInfo(CE_DamageDefOf.Flame_Secondary, InternalFireDamage * Pawn.BodySize * parent.Severity, 0, -1, null,

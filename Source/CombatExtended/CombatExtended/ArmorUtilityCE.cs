@@ -383,7 +383,7 @@ namespace CombatExtended
             if (pawn != null)
             {
                 // Pawns run their own armor calculations
-                dinfo.SetAmount(Mathf.CeilToInt(dinfo.Amount * Rand.Range(0f, 0.5f)));
+                dinfo.SetAmount(Mathf.CeilToInt(dinfo.Amount * Compatibility.Random.Range(0f, 0.5f)));
                 pawn.TakeDamage(dinfo);
             }
             else if (dinfo.IsAmbientDamage())

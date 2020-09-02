@@ -42,7 +42,7 @@ namespace CombatExtended
             //#endregion
 
             bool hasPrimary = (pawn.equipment != null && pawn.equipment.Primary != null);
-            CompAmmoUser primaryAmmoUser = hasPrimary ? pawn.equipment.Primary.TryGetComp<CompAmmoUser>() : hasWeaponInInventory(pawn) ? weaponInInventory(pawn) : null;
+            CompAmmoUser primaryAmmoUser = hasPrimary ? pawn.equipment.Primary.TryGetComp<CompAmmoUser>() : HasWeaponInInventory(pawn) ? WeaponInInventory(pawn) : null;
 
             #region Colonists with primary ammo-user and a loadout have no work priority
             if (pawn.Faction.IsPlayer
@@ -66,7 +66,7 @@ namespace CombatExtended
                     return WorkPriority.Unloading;
                 }
                 // Without inventory || colonist || stealing || lots of space left
-                if (!hasWeaponInInventory(pawn))
+                if (!HasWeaponInInventory(pawn))
                 {
                     return WorkPriority.Weapon;
                 }
@@ -192,7 +192,7 @@ namespace CombatExtended
             CompInventory inventory = pawn.TryGetComp<CompInventory>();
             bool hasPrimary = (pawn.equipment != null && pawn.equipment.Primary != null);
             CompAmmoUser primaryAmmoUser = hasPrimary ? pawn.equipment.Primary.TryGetComp<CompAmmoUser>() : null;
-            CompAmmoUser primaryAmmoUserWithInventoryCheck = hasPrimary ? pawn.equipment.Primary.TryGetComp<CompAmmoUser>() : hasWeaponInInventory(pawn) ? weaponInInventory(pawn) : null;
+            CompAmmoUser primaryAmmoUserWithInventoryCheck = hasPrimary ? pawn.equipment.Primary.TryGetComp<CompAmmoUser>() : HasWeaponInInventory(pawn) ? WeaponInInventory(pawn) : null;
             if (inventory != null)
             {
                 // Prefer ranged weapon in inventory
@@ -269,7 +269,7 @@ namespace CombatExtended
                     Thing WrongammoThing = null;
                     WrongammoThing = primaryAmmoUser != null
                         ? inventory.ammoList.Find(thing => !primaryAmmoUser.Props.ammoSet.ammoTypes.Any(a => a.ammo == thing.def))
-                        : inventory.ammoList.RandomElement<Thing>();
+                        : inventory.ammoList[(int) (Compatibility.Random.Value() * inventory.ammoList.Count)];
 
                     if (WrongammoThing != null)
                     {
@@ -568,7 +568,7 @@ namespace CombatExtended
         }
         */
 
-        private static bool hasWeaponInInventory(Pawn pawn)
+        private static bool HasWeaponInInventory(Pawn pawn)
         {
             Thing ListGun = pawn.TryGetComp<CompInventory>().rangedWeaponList.Find(thing => thing.TryGetComp<CompAmmoUser>() != null);
             if (ListGun != null)
@@ -579,7 +579,7 @@ namespace CombatExtended
             return false;
         }
 
-        private static CompAmmoUser weaponInInventory(Pawn pawn)
+        private static CompAmmoUser WeaponInInventory(Pawn pawn)
         {
             return pawn.TryGetComp<CompInventory>().rangedWeaponList.Find(thing => thing.TryGetComp<CompAmmoUser>() != null).TryGetComp<CompAmmoUser>();
         }
@@ -615,7 +615,7 @@ namespace CombatExtended
         {
             if (!pawn.CanReserve(blocker, 1))
             {
-                return JobMaker.MakeJob(JobDefOf.Goto, CellFinder.RandomClosewalkCellNear(cellBeforeBlocker, pawn.Map, 10), 100, true);
+                return JobMaker.MakeJob(JobDefOf.Goto, cellBeforeBlocker /*CellFinder.RandomClosewalkCellNear(cellBeforeBlocker, pawn.Map, 10)*/, 100, true);   // TODO: Synchronize, if anybody knows how
             }
             Job job = JobMaker.MakeJob(JobDefOf.AttackMelee, blocker);
             job.ignoreDesignations = true;

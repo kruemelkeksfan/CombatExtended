@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
+using Verse;
 
 namespace CombatExtended.Compatibility
 {
@@ -22,8 +24,6 @@ namespace CombatExtended.Compatibility
 			CellFinder.Random*
 			*/
 
-			Verse.Rand;
-
 			return 0.5f;
 		}
 
@@ -35,6 +35,27 @@ namespace CombatExtended.Compatibility
 		public static bool Chance(double chance)
 		{
 			return Value() < chance;
+		}
+
+		public static Vector2 InsideUnitCircle()
+		{
+			return new Vector2(0.0f, 1.0f);
+		}
+
+		// TODO: Implement Seeds
+		public static float ValueSeeded(int seed)
+		{
+			return Value();
+		}
+
+		public static float RangeSeeded(double min, double max, int seed)
+		{
+			return Range(min, max);
+		}
+
+		public static bool ChanceSeeded(double chance, int seed)
+		{
+			return Chance(chance);
 		}
 	}
 }

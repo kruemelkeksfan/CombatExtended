@@ -127,8 +127,8 @@ namespace CombatExtended
         public static Vector2 GenRandInCircle(float radius)
         {
             //Fancy math to get random point in circle
-            float angle = Compatibility.Random.Next() * (float) Math.PI * 2.0f;
-            float range = (float) Math.Sqrt(Compatibility.Random.Next()) * radius;
+            float angle = Compatibility.Random.Value() * (float) Math.PI * 2.0f;
+            float range = (float) Math.Sqrt(Compatibility.Random.Value()) * radius;
 			return new Vector2((float)(range * Math.Cos(angle)), (float)(range * Math.Sin(angle)));
 		}
 
@@ -253,11 +253,11 @@ namespace CombatExtended
                 return;
             }
             MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(casingMoteDef, null);
-            moteThrown.Scale = ((Compatibility.Random.Next() * 0.2f) + 0.3f) * size;
-            moteThrown.exactRotation = ((Compatibility.Random.Next() * 7.0f) - 3.0f);
+            moteThrown.Scale = Compatibility.Random.Range(0.3f, 0.5f) * size;
+            moteThrown.exactRotation = Compatibility.Random.Range(-3.0f, 4.0f);
             moteThrown.exactPosition = loc;
             moteThrown.airTimeLeft = 60;
-            moteThrown.SetVelocity(((Compatibility.Random.Next() * 40.0f) + 160.0f), ((Compatibility.Random.Next() * 0.2f) + 0.5f));
+            moteThrown.SetVelocity(Compatibility.Random.Range(160.0f, 200.0f), Compatibility.Random.Range(0.5f, 0.7f));
             //     moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
             GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
         }

@@ -20,7 +20,7 @@ namespace CombatExtended
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
-            updateTickOffset = Rand.Range(0, UpdateIntervalTicks);
+            updateTickOffset = (int) Compatibility.Random.Range(0, UpdateIntervalTicks);
             base.SpawnSetup(map, respawningAfterLoad);
         }
 

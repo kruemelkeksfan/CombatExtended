@@ -264,7 +264,7 @@ namespace CombatExtended
                 else
                 {
                     // we have nither a HoldTracker nor a Loadout that we can ask, so just pick stuff at random from Inventory.
-                    dropThing = pawn.inventory.innerContainer.RandomElement<Thing>();
+                    dropThing = pawn.inventory.innerContainer[(int) (Compatibility.Random.Value() * pawn.inventory.innerContainer.Count)];
                     dropCount = dropThing.stackCount;
                 }
             }

@@ -183,7 +183,7 @@ namespace CombatExtended
                     isCrouchWalking = true;
                 }
                 // Throw taunt
-                if (Rand.Chance(0.01f))
+                if (Compatibility.Random.Chance(0.01f))
                 {
                     var tauntThrower = (TauntThrower)(pawn.Map.GetComponent(typeof(TauntThrower)));
                     tauntThrower?.TryThrowTaunt(CE_RulePackDefOf.SuppressedMote, pawn);
@@ -201,7 +201,7 @@ namespace CombatExtended
             else if (IsHunkering)
                 ticksHunkered++;
 
-            if (ticksHunkered > MinTicksUntilMentalBreak && Rand.Chance(ChanceBreakPerTick))
+            if (ticksHunkered > MinTicksUntilMentalBreak && Compatibility.Random.Chance(ChanceBreakPerTick))
             {
                 var pawn = (Pawn) parent;
                 if (pawn.mindState != null && !pawn.mindState.mentalStateHandler.InMentalState)
@@ -209,7 +209,7 @@ namespace CombatExtended
                     var possibleBreaks = SuppressionUtility.GetPossibleBreaks(pawn);
                     if (possibleBreaks.Any())
                     {
-                        pawn.mindState.mentalStateHandler.TryStartMentalState(possibleBreaks.RandomElement());
+                        pawn.mindState.mentalStateHandler.TryStartMentalState(possibleBreaks[(int) (Compatibility.Random.Value() * possibleBreaks.Count)]);
                     }
                 }
             }

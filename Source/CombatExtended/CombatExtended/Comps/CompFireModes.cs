@@ -70,7 +70,7 @@ namespace CombatExtended
         {
             get
             {
-                if (useAIModes && Props.aiUseBurstMode && availableFireModes.Contains(FireMode.BurstFire)) return FireMode.BurstFire;
+                if (UseAIModes && Props.aiUseBurstMode && availableFireModes.Contains(FireMode.BurstFire)) return FireMode.BurstFire;
                 return currentFireModeInt;
             }
         }
@@ -78,11 +78,11 @@ namespace CombatExtended
         {
             get
             {
-                if (useAIModes && availableAimModes.Contains(Props.aiAimMode)) return Props.aiAimMode;
+                if (UseAIModes && availableAimModes.Contains(Props.aiAimMode)) return Props.aiAimMode;
                 return currentAimModeInt;
             }
         }
-        private bool useAIModes => Caster.Faction != Faction.OfPlayer;
+        private bool UseAIModes => Caster.Faction != Faction.OfPlayer;
 
         #endregion
 

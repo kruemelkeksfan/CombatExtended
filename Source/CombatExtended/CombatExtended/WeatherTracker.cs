@@ -84,10 +84,10 @@ namespace CombatExtended
             {
                 if (Math.Abs(_windDirection - _windDirectionTarget) < 1)
                 {
-                    _windDirectionTarget = Rand.Range(0, 360);
+                    _windDirectionTarget = Compatibility.Random.Range(0, 360);
                 }
 
-                _windDirection = Mathf.MoveTowardsAngle(_windDirection, _windDirectionTarget, Rand.Range(0, MaxDirectionDelta));
+                _windDirection = Mathf.MoveTowardsAngle(_windDirection, _windDirectionTarget, Compatibility.Random.Range(0, MaxDirectionDelta));
             }
         }
 

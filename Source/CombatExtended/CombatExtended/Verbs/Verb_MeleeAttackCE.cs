@@ -98,10 +98,10 @@ namespace CombatExtended
             SoundDef soundDef;
             Pawn defender = targetThing as Pawn;
             //var hitRoll = Rand.Value;
-            if (Rand.Chance(GetHitChance(targetThing)))
+            if (Compatibility.Random.Chance(GetHitChance(targetThing)))
             {
                 // Check for dodge
-                if (!targetImmobile && !surpriseAttack && Rand.Chance(defender.GetStatValue(StatDefOf.MeleeDodgeChance)))
+                if (!targetImmobile && !surpriseAttack && Compatibility.Random.Chance(defender.GetStatValue(StatDefOf.MeleeDodgeChance)))
                 {
                     // Attack is evaded
                     result = false;
@@ -117,15 +117,15 @@ namespace CombatExtended
                     //var resultRoll = Rand.Value;
                     var counterParryBonus = 1 + (EquipmentSource?.GetStatValue(CE_StatDefOf.MeleeCounterParryBonus) ?? 0);
                     var parryChance = GetComparativeChanceAgainst(defender, casterPawn, CE_StatDefOf.MeleeParryChance, BaseParryChance, counterParryBonus);
-                    if (!surpriseAttack && defender != null && CanDoParry(defender) && Rand.Chance(parryChance))
+                    if (!surpriseAttack && defender != null && CanDoParry(defender) && Compatibility.Random.Chance(parryChance))
                     {
                         // Attack is parried
                         Apparel shield = defender.apparel.WornApparel.FirstOrDefault(x => x is Apparel_Shield);
-                        bool isShieldBlock = shield != null && Rand.Chance(ShieldBlockChance);
+                        bool isShieldBlock = shield != null && Compatibility.Random.Chance(ShieldBlockChance);
                         Thing parryThing = isShieldBlock ? shield
                             : defender.equipment?.Primary ?? defender;
 
-                        if (Rand.Chance(GetComparativeChanceAgainst(defender, casterPawn, CE_StatDefOf.MeleeCritChance, BaseCritChance)))
+                        if (Compatibility.Random.Chance(GetComparativeChanceAgainst(defender, casterPawn, CE_StatDefOf.MeleeCritChance, BaseCritChance)))
                         {
                             // Do a riposte
                             DoParry(defender, parryThing, true);
@@ -152,7 +152,7 @@ namespace CombatExtended
                         BattleLogEntry_MeleeCombat log = CreateCombatLog((ManeuverDef maneuver) => maneuver.combatLogRulesHit, false);
 
                         // Attack connects
-                        if (surpriseAttack || Rand.Chance(GetComparativeChanceAgainst(casterPawn, defender, CE_StatDefOf.MeleeCritChance, BaseCritChance)))
+                        if (surpriseAttack || Compatibility.Random.Chance(GetComparativeChanceAgainst(casterPawn, defender, CE_StatDefOf.MeleeCritChance, BaseCritChance)))
                         {
                             // Do a critical hit
                             isCrit = true;
@@ -220,7 +220,7 @@ namespace CombatExtended
             if (EquipmentSource != null)
             {
                 //melee weapon damage variation
-                damAmount *= Rand.Range(StatWorker_MeleeDamage.GetDamageVariationMin(CasterPawn), StatWorker_MeleeDamage.GetDamageVariationMax(CasterPawn));
+                damAmount *= Compatibility.Random.Range(StatWorker_MeleeDamage.GetDamageVariationMin(CasterPawn), StatWorker_MeleeDamage.GetDamageVariationMax(CasterPawn));
             }
             else if (!CE_StatDefOf.UnarmedDamage.Worker.IsDisabledFor(CasterPawn))  //ancient soldiers can punch even if non-violent, this prevents the disabled stat from being used
             {
@@ -270,10 +270,10 @@ namespace CombatExtended
             {
                 foreach (ExtraDamage extraDamage in this.tool.extraMeleeDamages)
                 {
-                    if (Rand.Chance(extraDamage.chance))
+                    if (Compatibility.Random.Chance(extraDamage.chance))
                     {
                         damAmount = extraDamage.amount;
-                        damAmount = Rand.Range(damAmount * 0.8f, damAmount * 1.2f);
+                        damAmount = Compatibility.Random.Range(damAmount * 0.8f, damAmount * 1.2f);
                         var extraDamageInfo = new DamageInfo(extraDamage.def, damAmount, extraDamage.AdjustedArmorPenetration(this, this.CasterPawn), -1f, this.caster, null, source, DamageInfo.SourceCategory.ThingOrUnknown, null);
                         extraDamageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
                         extraDamageInfo.SetWeaponBodyPartGroup(bodyPartGroupDef);
@@ -461,7 +461,7 @@ namespace CombatExtended
             var casterReach = new CollisionVertical(CasterPawn).Max * 1.2f;
             var targetHeight = new CollisionVertical(pawn);
             BodyPartHeight maxHeight = targetHeight.GetRandWeightedBodyHeightBelow(casterReach);
-            BodyPartHeight height = (BodyPartHeight)Rand.RangeInclusive(1, (int)maxHeight);
+            BodyPartHeight height = (BodyPartHeight)((int) Compatibility.Random.Range(1, (int)maxHeight + 1));
             return height;
         }
 

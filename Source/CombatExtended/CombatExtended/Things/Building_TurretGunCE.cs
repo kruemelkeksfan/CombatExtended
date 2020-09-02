@@ -382,7 +382,7 @@ namespace CombatExtended
             Faction faction = attackTargetSearcher.Thing.Faction;
             float range = this.AttackVerb.verbProps.range;
             Building t;
-            if (Rand.Value < 0.5f && this.AttackVerb.ProjectileFliesOverhead() && faction.HostileTo(Faction.OfPlayer) && base.Map.listerBuildings.allBuildingsColonist.Where(delegate (Building x)
+            if (Compatibility.Random.Value() < 0.5f && this.AttackVerb.ProjectileFliesOverhead() && faction.HostileTo(Faction.OfPlayer) && base.Map.listerBuildings.allBuildingsColonist.Where(delegate (Building x)
             {
                 float num = this.AttackVerb.verbProps.EffectiveMinRange(x, this);
                 float num2 = (float)x.Position.DistanceToSquared(this.Position);

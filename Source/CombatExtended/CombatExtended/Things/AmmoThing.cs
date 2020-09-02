@@ -29,7 +29,7 @@ namespace CombatExtended
             {
                 if (HitPoints - dinfo.Amount > 0)
                 {
-                    numToCookOff += Mathf.RoundToInt(def.stackLimit * ((float)dinfo.Amount / HitPoints) * (def.smallVolume ? Rand.Range(1f, 2f) : Rand.Range(0.0f, 1f)));
+                    numToCookOff += Mathf.RoundToInt(def.stackLimit * ((float)dinfo.Amount / HitPoints) * (def.smallVolume ? Compatibility.Random.Range(1f, 2f) : Compatibility.Random.Range(0.0f, 1f)));
                 }
                 //Assume CompExplosive destroys on kill
                 else if (this.TryGetComp<CompExplosive>() == null || !this.TryGetComp<CompExplosive>().Props.explodeOnKilled)
@@ -61,7 +61,7 @@ namespace CombatExtended
             base.Tick();
 
             // Cook off ammo based on how much damage we've taken so far
-            if (numToCookOff > 0 && Rand.Chance((float)numToCookOff / def.stackLimit))
+            if (numToCookOff > 0 && Compatibility.Random.Chance((float)numToCookOff / def.stackLimit))
             {
                 if (TryLaunchCookOffProjectile() || TryDetonate())
                 {
@@ -107,7 +107,7 @@ namespace CombatExtended
 
             if (comp != null || detProps != null)
             {
-                if (Rand.Chance(Mathf.Clamp01(0.75f - Mathf.Pow(HitPoints / MaxHitPoints, 2))))
+                if (Compatibility.Random.Chance(Mathf.Clamp01(0.75f - Mathf.Pow(HitPoints / MaxHitPoints, 2))))
                 {
                     if (comp != null)
                         comp.Explode(this, Position.ToVector3Shifted(), Map, Mathf.Pow(stackCountScale, 0.333f), null, new List<Thing>() { this });
@@ -147,8 +147,8 @@ namespace CombatExtended
                 projectile.logMisses = false;
                 projectile.Launch(this,
                     new Vector2(DrawPos.x, DrawPos.z),
-                    Mathf.Acos(2 * UnityEngine.Random.Range(0.5f, 1f) - 1),
-                    UnityEngine.Random.Range(0, 360),
+                    Mathf.Acos(2 * Compatibility.Random.Range(0.5f, 1f) - 1),
+                    Compatibility.Random.Range(0, 360),
                     0.1f,
                     AmmoDef.cookOffProjectile.projectile.speed * AmmoDef.cookOffSpeed,
                     this);

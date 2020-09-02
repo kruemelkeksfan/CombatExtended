@@ -49,7 +49,7 @@ namespace CombatExtended
             infectChance *= parent.Severity / DamageThreshold;
 
             // Infection check
-            if (Rand.Value < infectChance * _infectionModifier)
+            if (Compatibility.Random.Value() < infectChance * _infectionModifier)
             {
                 _alreadyCausedInfection = true;
                 Pawn.health.AddHediff(HediffDefOf.WoundInfection, parent.Part);
@@ -78,7 +78,7 @@ namespace CombatExtended
                 && !Pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(parent.Part) 
                 && !parent.IsPermanent())
             {
-                _ticksUntilInfect = InfectionDelayHours.RandomInRange * GenDate.TicksPerHour;
+                _ticksUntilInfect = ((int) Compatibility.Random.Range(InfectionDelayHours.min, InfectionDelayHours.max + 1.0f)) * GenDate.TicksPerHour;
             }
         }
 

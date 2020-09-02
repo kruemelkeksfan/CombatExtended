@@ -135,7 +135,7 @@ namespace CombatExtended
                             if (instigator is AmmoThing || other.instigator is AmmoThing)
                                 newInstigator = instigator is AmmoThing ? other.instigator : instigator;
                             else
-                                newInstigator = Rand.Value < 0.5f ? instigator : other.instigator;
+                                newInstigator = Compatibility.Random.Value() < 0.5f ? instigator : other.instigator;
                         }
                     }
                 }
@@ -400,19 +400,19 @@ namespace CombatExtended
             }
             var flag = ShouldCellBeAffectedOnlyByDamage(c);
             var spawnMote = c.GetFirstThing(Map, damType.explosionCellMote) == null;
-            if (!flag && Rand.Chance(preExplosionSpawnChance) && c.Walkable(Map)) {
+            if (!flag && Compatibility.Random.Chance(preExplosionSpawnChance) && c.Walkable(Map)) {
 				TrySpawnExplosionThing(preExplosionSpawnThingDef, c, preExplosionSpawnThingCount);
 			}
 			damType.Worker.ExplosionAffectCell(this, c, damagedThings, null, spawnMote && !flag);
-            if (!flag && Rand.Chance(postExplosionSpawnChance) && c.Walkable(Map)) {
+            if (!flag && Compatibility.Random.Chance(postExplosionSpawnChance) && c.Walkable(Map)) {
 				TrySpawnExplosionThing(postExplosionSpawnThingDef, c, postExplosionSpawnThingCount);
 			}
 			var num = chanceToStartFire;
 			if (damageFalloff) {
 				num *= Mathf.Lerp(1f, (float)DamageAtEdge / damAmount, c.DistanceTo(Position) / radius);
 			}
-			if (Rand.Chance(num)) {
-				FireUtility.TryStartFireIn(c, Map, Rand.Range(0.1f, 0.925f));
+			if (Compatibility.Random.Chance(num)) {
+				FireUtility.TryStartFireIn(c, Map, Compatibility.Random.Range(0.1f, 0.925f));
             }
             //ExplosionCE (this) can be Destroyed after ExplosionAffectCell
         }

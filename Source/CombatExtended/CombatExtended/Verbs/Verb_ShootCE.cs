@@ -192,9 +192,9 @@ namespace CombatExtended
                     ShooterPawn.records.Increment(RecordDefOf.ShotsFired);
                 }
                 //Drop casings
-                if (VerbPropsCE.ejectsCasings && projectilePropsCE.dropsCasings)
+                if (VerbPropsCE.ejectsCasings && ProjectilePropsCE.dropsCasings)
                 {
-                    CE_Utility.ThrowEmptyCasing(caster.DrawPos, caster.Map, ThingDef.Named(projectilePropsCE.casingMoteDefname));
+                    CE_Utility.ThrowEmptyCasing(caster.DrawPos, caster.Map, ThingDef.Named(ProjectilePropsCE.casingMoteDefname));
                 }
                 // This needs to here for weapons without magazine to ensure their last shot plays sounds
                 if (CompAmmo != null && !CompAmmo.HasMagazine && CompAmmo.UseAmmo)

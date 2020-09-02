@@ -52,7 +52,7 @@ namespace CombatExtended
         #region Properties
 
         public VerbPropertiesCE VerbPropsCE => verbProps as VerbPropertiesCE;
-        public ProjectilePropertiesCE projectilePropsCE => Projectile.projectile as ProjectilePropertiesCE;
+        public ProjectilePropertiesCE ProjectilePropsCE => Projectile.projectile as ProjectilePropertiesCE;
 
         // Returns either the pawn aiming the weapon or in case of turret guns the turret operator or null if neither exists
         public Pawn ShooterPawn => CasterPawn ?? CE_Utility.TryGetTurretOperator(caster);
@@ -75,7 +75,7 @@ namespace CombatExtended
             {
                 if (CompCharges != null)
                 {
-                    if (CompCharges.GetChargeBracket((currentTarget.Cell - caster.Position).LengthHorizontal, ShotHeight, projectilePropsCE.Gravity, out var bracket))
+                    if (CompCharges.GetChargeBracket((currentTarget.Cell - caster.Position).LengthHorizontal, ShotHeight, ProjectilePropsCE.Gravity, out var bracket))
                     {
                         shotSpeed = bracket.x;
                     }
@@ -209,7 +209,7 @@ namespace CombatExtended
         public override void WarmupComplete()
         {
             // attack shooting expression
-            if ((ShooterPawn?.Spawned ?? false) && currentTarget.Thing is Pawn && Rand.Chance(0.25f))
+            if ((ShooterPawn?.Spawned ?? false) && currentTarget.Thing is Pawn && Compatibility.Random.Chance(0.25f))
             {
                 var tauntThrower = (TauntThrower)ShooterPawn.Map.GetComponent(typeof(TauntThrower));
                 tauntThrower?.TryThrowTaunt(CE_RulePackDefOf.AttackMote, ShooterPawn);
@@ -243,8 +243,8 @@ namespace CombatExtended
                     estimatedTargDist = report.GetRandDist();
                 }
                 Vector3 v = report.target.Thing?.TrueCenter() ?? report.target.Cell.ToVector3Shifted(); //report.targetPawn != null ? report.targetPawn.DrawPos + report.targetPawn.Drawer.leaner.LeanOffset * 0.5f : report.target.Cell.ToVector3Shifted();
-                if (report.targetPawn != null)
-                    v += report.targetPawn.Drawer.leaner.LeanOffset * 0.5f;
+                if (report.TargetPawn != null)
+                    v += report.TargetPawn.Drawer.leaner.LeanOffset * 0.5f;
 
                 newTargetLoc.Set(v.x, v.z);
 
@@ -307,7 +307,7 @@ namespace CombatExtended
                     }
                     targetHeight = VerbPropsCE.ignorePartialLoSBlocker ? 0 : targetRange.Average;
                 }
-                angleRadians += ProjectileCE.GetShotAngle(ShotSpeed, (newTargetLoc - sourceLoc).magnitude, targetHeight - ShotHeight, Projectile.projectile.flyOverhead, projectilePropsCE.Gravity);
+                angleRadians += ProjectileCE.GetShotAngle(ShotSpeed, (newTargetLoc - sourceLoc).magnitude, targetHeight - ShotHeight, Projectile.projectile.flyOverhead, ProjectilePropsCE.Gravity);
             }
 
             // ----------------------------------- STEP 4: Mechanical variation
@@ -337,8 +337,8 @@ namespace CombatExtended
 
             float recoilMagnitude = numShotsFired == 0 ? 0 : Mathf.Pow((5 - ShootingAccuracy), (Mathf.Min(10, numShotsFired) / 6.25f));
 
-            rotation += recoilMagnitude * UnityEngine.Random.Range(minX, maxX);
-            angle += Mathf.Deg2Rad * recoilMagnitude * UnityEngine.Random.Range(minY, maxY);
+            rotation += recoilMagnitude * Compatibility.Random.Range(minX, maxX);
+            angle += Mathf.Deg2Rad * recoilMagnitude * Compatibility.Random.Range(minY, maxY);
         }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace CombatExtended
             }
             report.shotSpeed = ShotSpeed;
             report.swayDegrees = SwayAmplitude;
-            var spreadmult = projectilePropsCE != null ? projectilePropsCE.spreadMult : 0f;
+            var spreadmult = ProjectilePropsCE != null ? ProjectilePropsCE.spreadMult : 0f;
             report.spreadDegrees = (EquipmentSource?.GetStatValue(StatDef.Named("ShotSpread")) ?? 0) * spreadmult;
             Thing cover;
             float smokeDensity;
@@ -544,14 +544,14 @@ namespace CombatExtended
             {
                 return false;
             }
-            if (projectilePropsCE.pelletCount < 1)
+            if (ProjectilePropsCE.pelletCount < 1)
             {
                 Log.Error(EquipmentSource.LabelCap + " tried firing with pelletCount less than 1.");
                 return false;
             }
             ShiftVecReport report = ShiftVecReportFor(currentTarget);
             bool pelletMechanicsOnly = false;
-            for (int i = 0; i < projectilePropsCE.pelletCount; i++)
+            for (int i = 0; i < ProjectilePropsCE.pelletCount; i++)
             {
 
                 ProjectileCE projectile = (ProjectileCE)ThingMaker.MakeThing(Projectile, null);
@@ -567,7 +567,7 @@ namespace CombatExtended
                 projectile.minCollisionSqr = Mathf.Pow(targDist, 2);
                 projectile.intendedTarget = currentTarget.Thing;
                 projectile.mount = caster.Position.GetThingList(caster.Map).FirstOrDefault(t => t is Pawn && t != caster);
-                projectile.AccuracyFactor = report.accuracyFactor * report.swayDegrees * ((numShotsFired + 1) * 0.75f);
+                projectile.AccuracyFactor = report.AccuracyFactor * report.swayDegrees * ((numShotsFired + 1) * 0.75f);
                 projectile.Launch(
                     Shooter,    //Shooter instead of caster to give turret operators' records the damage/kills obtained
                     sourceLoc,

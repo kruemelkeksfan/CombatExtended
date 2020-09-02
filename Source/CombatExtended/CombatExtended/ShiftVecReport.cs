@@ -11,7 +11,7 @@ namespace CombatExtended
     public class ShiftVecReport
     {
         public LocalTargetInfo target = null;
-        public Pawn targetPawn
+        public Pawn TargetPawn
         {
             get
             {
@@ -22,7 +22,7 @@ namespace CombatExtended
         public float sightsEfficiency = 1f;
 
         private float accuracyFactorInt = -1f;
-        public float accuracyFactor
+        public float AccuracyFactor
         {
             get
             {
@@ -41,7 +41,7 @@ namespace CombatExtended
         public float lightingShift = 0f;
         public float weatherShift = 0f;
         private float visibilityShiftInt = -1f;
-        public float visibilityShift
+        public float VisibilityShift
         {
             get
             {
@@ -55,23 +55,23 @@ namespace CombatExtended
 
         // Leading variables
         public float shotSpeed = 0f;
-        private bool targetIsMoving
+        private bool TargetIsMoving
         {
             get
             {
-                return targetPawn != null && targetPawn.pather != null && targetPawn.pather.Moving;
+                return TargetPawn != null && TargetPawn.pather != null && TargetPawn.pather.Moving;
             }
         }
         private float leadDistInt = -1f;
-        public float leadDist
+        public float LeadDist
         {
             get
             {
                 if (leadDistInt < 0)
                 {
-                    if (targetIsMoving)
+                    if (TargetIsMoving)
                     {
-                        float targetSpeed = CE_Utility.GetMoveSpeed(targetPawn);
+                        float targetSpeed = CE_Utility.GetMoveSpeed(TargetPawn);
                         float timeToTarget = shotDist / shotSpeed;
                         leadDistInt = targetSpeed * timeToTarget;
                     }
@@ -83,22 +83,22 @@ namespace CombatExtended
                 return leadDistInt;
             }
         }
-        public float leadShift
+        public float LeadShift
         {
             get
             {
-                return leadDist * Mathf.Min(accuracyFactor * 0.25f, 3);
+                return LeadDist * Mathf.Min(AccuracyFactor * 0.25f, 3);
             }
         }
 
         // Range variables
         public float shotDist = 0f;
         public float maxRange;
-        public float distShift
+        public float DistShift
         {
             get
             {
-                return shotDist * (shotDist / maxRange) * Mathf.Min(accuracyFactor * 0.5f, 0.8f);
+                return shotDist * (shotDist / maxRange) * Mathf.Min(AccuracyFactor * 0.5f, 0.8f);
             }
         }
 
@@ -133,22 +133,22 @@ namespace CombatExtended
 
         public Vector2 GetRandCircularVec()
         {
-            Vector2 vec = CE_Utility.GenRandInCircle(visibilityShift + circularMissRadius + indirectFireShift);
+            Vector2 vec = CE_Utility.GenRandInCircle(VisibilityShift + circularMissRadius + indirectFireShift);
             return vec;
         }
 
         public float GetRandDist()
         {
-            float dist = shotDist + UnityEngine.Random.Range(-distShift, distShift);
+            float dist = shotDist + Compatibility.Random.Range(-DistShift, DistShift);
             return dist;
         }
 
         public Vector2 GetRandLeadVec()
         {
             Vector3 moveVec = new Vector3();
-            if (targetIsMoving)
+            if (TargetIsMoving)
             {
-            	moveVec = (targetPawn.pather.nextCell - targetPawn.Position).ToVector3() * (leadDist + UnityEngine.Random.Range(-leadShift, leadShift));
+            	moveVec = (TargetPawn.pather.nextCell - TargetPawn.Position).ToVector3() * (LeadDist + Compatibility.Random.Range(-LeadShift, LeadShift));
             }
             return new Vector2(moveVec.x, moveVec.z);
         }
@@ -156,7 +156,7 @@ namespace CombatExtended
         /// <returns>Angle Vector2 in degrees</returns>
         public Vector2 GetRandSpreadVec()
         {
-            Vector2 vec = UnityEngine.Random.insideUnitCircle * spreadDegrees;
+            Vector2 vec = Compatibility.Random.InsideUnitCircle() * spreadDegrees;
             return vec;
         }
 
@@ -168,9 +168,9 @@ namespace CombatExtended
         public string GetTextReadout()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            if (visibilityShift > 0)
+            if (VisibilityShift > 0)
             {
-                stringBuilder.AppendLine("   " + "CE_VisibilityError".Translate() + "\t" + GenText.ToStringByStyle(visibilityShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
+                stringBuilder.AppendLine("   " + "CE_VisibilityError".Translate() + "\t" + GenText.ToStringByStyle(VisibilityShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
 
                 if (lightingShift > 0)
                 {
@@ -185,13 +185,13 @@ namespace CombatExtended
                     stringBuilder.AppendLine("      " + "CE_SmokeDensity".Translate() + "\t" + AsPercent(smokeDensity));
                 }
             }
-            if (leadShift > 0)
+            if (LeadShift > 0)
             {
-                stringBuilder.AppendLine("   " + "CE_LeadError".Translate() + "\t" + GenText.ToStringByStyle(leadShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
+                stringBuilder.AppendLine("   " + "CE_LeadError".Translate() + "\t" + GenText.ToStringByStyle(LeadShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
             }
-            if(distShift > 0)
+            if(DistShift > 0)
             {
-                stringBuilder.AppendLine("   " + "CE_RangeError".Translate() + "\t" + GenText.ToStringByStyle(distShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
+                stringBuilder.AppendLine("   " + "CE_RangeError".Translate() + "\t" + GenText.ToStringByStyle(DistShift, ToStringStyle.FloatTwo) + " " + "CE_cells".Translate());
             }
             if (swayDegrees > 0)
             {

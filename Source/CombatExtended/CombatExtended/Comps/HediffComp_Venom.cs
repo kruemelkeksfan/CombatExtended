@@ -15,7 +15,7 @@ namespace CombatExtended
             base.CompPostPostAdd(dinfo);
 
             _venomPerTick = Props.VenomPerSeverity * parent.Severity / parent.pawn.BodySize * parent.pawn.GetStatValue(StatDefOf.ToxicSensitivity);
-            _lifetime = Rand.Range(Props.MinTicks, Props.MaxTicks);
+            _lifetime = (int) Compatibility.Random.Range(Props.MinTicks, Props.MaxTicks);
         }
 
         public override void CompPostTick(ref float severityAdjustment)

@@ -8,14 +8,6 @@ namespace CombatExtended.Compatibility
     [StaticConstructorOnStartup]
     static class Patches
     {
-        class SeedHolder
-		{
-            [SyncField]
-            public int seed;
-		}
-
-    	static SeedHolder seed = new SeedHolder();
-
 		static Patches()
 		{
 			if(!MP.enabled)

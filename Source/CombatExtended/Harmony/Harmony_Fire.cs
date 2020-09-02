@@ -8,6 +8,7 @@ using HarmonyLib;
 using Verse;
 using RimWorld;
 using UnityEngine;
+using static CombatExtended.Compatibility.Random;   // Static Import, because CombatExtended.Compatibility.Random... did not work in this Package
 
 namespace CombatExtended.HarmonyCE
 {
@@ -170,10 +171,11 @@ namespace CombatExtended.HarmonyCE
                 ? _angleCurveNarrow.Evaluate(tracker.GetWindStrengthAt(fire.Position) * FireSpread.values.windSpeedMultiplier)
                 : _angleCurveWide.Evaluate(tracker.GetWindStrengthAt(fire.Position) * FireSpread.values.windSpeedMultiplier);
             angleDelta *= 0.5f;
-            var angle = Rand.Range(-angleDelta, angleDelta);
+            
+            var angle = Range(-angleDelta, angleDelta);
             var vec = tracker.WindDirection.RotatedBy(angle);
             if (spreadFar)
-                vec *= Rand.Range(1, Mathf.Max(2, tracker.GetWindStrengthAt(fire.Position) * FireSpread.values.windSpeedMultiplier));
+                vec *= Range(1, Mathf.Max(2, tracker.GetWindStrengthAt(fire.Position) * FireSpread.values.windSpeedMultiplier));
 
             return vec.ToIntVec3();
         }

@@ -49,13 +49,13 @@ namespace CombatExtended
                 projectile.canTargetSelf = true;
                 projectile.minCollisionSqr = 1f;
                 //TODO : Don't hardcode at FragmentShadowChance, make XML-modifiable
-                projectile.castShadow = (UnityEngine.Random.value < FragmentShadowChance);
+                projectile.castShadow = (Compatibility.Random.Value() < FragmentShadowChance);
                 projectile.logMisses = false;
                 projectile.Launch(
                     instigator,
                     exactOrigin,
-                    range.RandomInRange * Mathf.Deg2Rad,
-                    UnityEngine.Random.Range(0, 360),
+                    Compatibility.Random.Range(range.min, range.max) * Mathf.Deg2Rad,
+                    Compatibility.Random.Range(0, 360),
                     height,
                     fragSpeedFactor * projectile.def.projectile.speed,
                     projectile

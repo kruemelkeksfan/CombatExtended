@@ -49,7 +49,7 @@ namespace CombatExtended.Compatibility
             var map = projectile.Map;
             Vector3 exactPosition = projectile.ExactPosition;
 
-            refreshShields(map);
+            RefreshShields(map);
 
             foreach (var building in shields)
             {
@@ -75,7 +75,7 @@ namespace CombatExtended.Compatibility
             var map = projectile.Map;
             Vector3 exactPosition = projectile.ExactPosition;
 
-            refreshShields(map);
+            RefreshShields(map);
 
             var blocked = shields.Any(building => ShieldInterceptsProjectile(building as Building_Shield, projectile, launcher));
             CELogger.Message($"Blocked {projectile}? -- {blocked}");
@@ -105,7 +105,7 @@ namespace CombatExtended.Compatibility
             return false;
         }
 
-        private static void refreshShields(Map map)
+        private static void RefreshShields(Map map)
         {
             int thisTick = Find.TickManager.TicksAbs;
             if (lastCacheTick != thisTick)

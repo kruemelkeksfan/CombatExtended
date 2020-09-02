@@ -158,7 +158,7 @@ namespace CombatExtended
         /// <summary>
         /// The amount of float ticks the projectile has remained in the air for, including impact.
         /// </summary>
-        protected float fTicks
+        protected float FTicks
         {
             get
             {
@@ -172,7 +172,7 @@ namespace CombatExtended
         {
             if (ticks < 0)
             {
-                ticks = fTicks;
+                ticks = FTicks;
             }
             return Vector2.Lerp(origin, Destination, ticks / StartingTicksToImpact);
         }
@@ -203,7 +203,7 @@ namespace CombatExtended
         {
             get
             {
-                return Vec2Position() + new Vector2(0, Height - shotHeight * ((StartingTicksToImpact - fTicks) / StartingTicksToImpact));
+                return Vec2Position() + new Vector2(0, Height - shotHeight * ((StartingTicksToImpact - FTicks) / StartingTicksToImpact));
             }
         }
 
@@ -272,7 +272,7 @@ namespace CombatExtended
 
                 var vy = (w.y - shotHeight) / StartingTicksToImpact
                     + shotSpeed * Mathf.Sin(shotAngle) / GenTicks.TicksPerRealSecond
-                    - (GravityFactor * fTicks) / (GenTicks.TicksPerRealSecond * GenTicks.TicksPerRealSecond);
+                    - (GravityFactor * FTicks) / (GenTicks.TicksPerRealSecond * GenTicks.TicksPerRealSecond);
 
                 return Quaternion.AngleAxis(
                     Mathf.Rad2Deg * Mathf.Atan2(-vy, vx) + 90f
@@ -464,7 +464,7 @@ namespace CombatExtended
             }
             interceptAngleField.SetValue(interceptorComp, lastExactPos.AngleToFlat(interceptorThing.TrueCenter()));
             interceptTicksField.SetValue(interceptorComp, Find.TickManager.TicksGame);
-            var areWeLucky = Rand.Chance((def.projectile as ProjectilePropertiesCE)?.empShieldBreakChance ?? 0);
+            var areWeLucky = Compatibility.Random.Chance((def.projectile as ProjectilePropertiesCE)?.empShieldBreakChance ?? 0);
             if (areWeLucky)
             {
                 var firstEMPSecondaryDamage = (def.projectile as ProjectilePropertiesCE)?.secondaryDamage?.FirstOrDefault(sd => sd.def == DamageDefOf.EMP);
@@ -688,7 +688,7 @@ namespace CombatExtended
                 var accuracyFactor = def.projectile.alwaysFreeIntercept ? 1 : (thing.Position - OriginIV3).LengthHorizontal / 40 * AccuracyFactor;
                 var chance = thing.def.fillPercent * accuracyFactor;
                 if (Controller.settings.DebugShowTreeCollisionChance) MoteMaker.ThrowText(thing.Position.ToVector3Shifted(), thing.Map, chance.ToString());
-                if (!Rand.Chance(chance)) return false;
+                if (!Compatibility.Random.Chance(chance)) return false;
             }
 
             var point = ShotLine.GetPoint(dist);
@@ -796,7 +796,7 @@ namespace CombatExtended
                     //TODO : EXPERIMENTAL Add edifice height
                     var shadowPos = new Vector3(ExactPosition.x,
                                                 def.Altitude - 0.01f,
-                                                ExactPosition.z - Mathf.Lerp(shotHeight, 0f, fTicks / StartingTicksToImpact));
+                                                ExactPosition.z - Mathf.Lerp(shotHeight, 0f, FTicks / StartingTicksToImpact));
                     //EXPERIMENTAL: + (new CollisionVertical(ExactPosition.ToIntVec3().GetEdifice(Map))).Max);
 
                     //TODO : Vary ShadowMat plane
@@ -869,7 +869,7 @@ namespace CombatExtended
                 && def.projectile.preExplosionSpawnChance > 0
                 && def.projectile.preExplosionSpawnThingDef != null
                 && (Controller.settings.EnableAmmoSystem || !(def.projectile.preExplosionSpawnThingDef is AmmoDef))
-                && Rand.Value < def.projectile.preExplosionSpawnChance)
+                && Compatibility.Random.Value() < def.projectile.preExplosionSpawnChance)
             {
                 var thingDef = def.projectile.preExplosionSpawnThingDef;
 

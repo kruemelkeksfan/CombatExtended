@@ -3,6 +3,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using static CombatExtended.Compatibility.Random;   // Static Import, because CombatExtended.Compatibility.Random... did not work in this Package
 
 namespace CombatExtended.HarmonyCE
 {
@@ -46,7 +47,7 @@ namespace CombatExtended.HarmonyCE
             if (pawn == null)
                 return;
 
-            if (Rand.Chance(CatchFireChance * pawn.GetStatValue(StatDefOf.Flammability)))
+            if (Chance(CatchFireChance * pawn.GetStatValue(StatDefOf.Flammability)))
                 pawn.TryAttachFire(fireSize);
         }
     }
